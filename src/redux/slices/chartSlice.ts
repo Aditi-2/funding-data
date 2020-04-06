@@ -7,13 +7,15 @@ interface ChatState {
   apiData: IFundingObject[];
   categories: string[];
   fundingSum: GraphDataPoint[];
+  tableData: IFundingObject[];
 }
 
 const initialState: ChatState = {
   fetchStatus: ApiStatus.none,
   apiData: [],
   categories: [],
-  fundingSum: []
+  fundingSum: [],
+  tableData: []
 };
 
 /**
@@ -69,6 +71,10 @@ export const chartSlice = createSlice({
         };
       });
       state.fundingSum = groupData;
+      return state;
+    },
+    setTableData: (state, payload: PayloadAction<IFundingObject[]>) => {
+      state.tableData = payload.payload;
       return state;
     }
   }

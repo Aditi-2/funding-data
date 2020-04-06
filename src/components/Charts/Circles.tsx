@@ -1,5 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { GraphDataPoint } from "../../model/GraphData";
+import { chartSlice } from "../../redux/slices/chartSlice";
 import { ScaleLinear } from "d3";
 
 interface IScale {
@@ -10,7 +12,7 @@ interface IScale {
 }
 
 export interface ICirclesProps{
-  points: any[];
+  points: GraphDataPoint[];
   scale: IScale;
   transform: string
   xaxis: string;
@@ -23,12 +25,18 @@ export interface ICirclesProps{
 export const Circles: React.FC<ICirclesProps> = (props: ICirclesProps) => {
   const { points, scale, xaxis, yaxis, ...rest } = props;
   const dispatch = useDispatch();
+  const handleClick = (data: GraphDataPoint) => {
+    dispatch(chartSlice.actions.setTableData(data.tableData));
+  };
   return (
     <g className="circles" {...rest}>
-      {points.map((data: any, i: number) => {
+      {points.map((data: GraphDataPoint, i: number) => {
         return (
           <g
             key={i}
+            onClick={() => {
+              handleClick(data);
+            }}
           >
             <circle
               cx={scale.xScale(data[xaxis])}

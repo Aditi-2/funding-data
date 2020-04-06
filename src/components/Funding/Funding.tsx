@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Form, Navbar, Spinner } from "react-bootstrap";
 import { BubbleChart, IBubbleChart } from "../Charts/BubbleChart";
+import { TableComponent } from "../Table/Table";
 import { getData } from "../../services/FundingData";
 import { ApiStatus } from "../../model/ApiData";
 import { chartSlice } from "../../redux/slices/chartSlice";
@@ -53,7 +54,7 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
   /**
    * Get data from state
    */
-  const { fundingSum, fetchStatus } = useSelector(
+  const { fundingSum, tableData, fetchStatus } = useSelector(
     (state: RootState) => state.chart
   );
 
@@ -86,6 +87,7 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
     if (event.target.value === "1") {
       setValue(initalState);
     }
+    dispatch(chartSlice.actions.setTableData([]));
   };
 
   /**
@@ -135,6 +137,17 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
           {fetchStatus === ApiStatus.success && (
             <Col>
               <BubbleChart {...chartData} />
+            </Col>
+          )}
+          {tableData.length > 0 && (
+            <Col>
+              <TableComponent
+                tableData={tableData}
+                tableHeader={Object.keys(tableData[0])}
+                striped
+                bordered
+                hover
+              />
             </Col>
           )}
         </Row>

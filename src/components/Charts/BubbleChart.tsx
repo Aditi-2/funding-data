@@ -10,12 +10,13 @@ import {
 } from "d3";
 import { Circles } from "./Circles";
 import { AxisComponent } from "./Axis";
+import { GraphDataPoint } from "../../model/GraphData";
 
 export interface IBubbleChart {
   height: number;
   width: number;
   margin: number;
-  data: any[];
+  data: GraphDataPoint[];
   graphType: string;
   xaxis: string;
   yaxis: string;

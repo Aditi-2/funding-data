@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Form, Navbar, Spinner } from "react-bootstrap";
 import { BubbleChart, IBubbleChart } from "../Charts/BubbleChart";
+import { getData } from "../../services/FundingData";
+import { ApiStatus } from "../../model/ApiData";
+import { chartSlice } from "../../redux/slices/chartSlice";
+import { RootState } from "../../redux/rootReducer";
 
 interface IFundingProps {}
 
@@ -21,8 +25,37 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
   const [value, setValue] = useState<IFundingState>(initalState);
   const { graphType, yaxis, xaxis } = value;
   /**
+   * use react hooks to get the data from api and set it to the store
+   */
+  useEffect(() => {
+    const processData = async () => {
+      try {
+        /**
+         * fetch data from the api
+         */
+        dispatch(chartSlice.actions.setStatus(ApiStatus.pending));
+        const response = await getData();
+        dispatch(chartSlice.actions.setApiData(response));
+        dispatch(chartSlice.actions.setStatus(ApiStatus.success));
+
+        /**
+         * process data for the render
+         */
+        dispatch(chartSlice.actions.extractCategories());
+        dispatch(chartSlice.actions.aggregateData());
+      } catch (error) {
+        dispatch(chartSlice.actions.setStatus(ApiStatus.error));
+      }
+    };
+    processData();
+  }, [dispatch]);
+
+  /**
    * Get data from state
    */
+  const { fundingSum, fetchStatus } = useSelector(
+    (state: RootState) => state.chart
+  );
 
   /**
    * Array for graph selector
@@ -62,23 +95,7 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
     height: 512,
     width: 1024,
     margin: 20,
-    data: [
-      {
-        x: 10,
-        y: 20,
-        label: "beauty"
-      },
-      {
-        x: 5,
-        y: 30,
-        label: "games"
-      },
-      {
-        x: 30,
-        y: 12,
-        label: "automotive"
-      }
-    ],
+    data: fundingSum,
     graphType,
     xaxis,
     yaxis,
@@ -115,8 +132,17 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
           </Col>
         </Row>
         <Row>
-          <Col>
-            <BubbleChart {...chartData} />
+          {fetchStatus === ApiStatus.success && (
+            <Col>
+              <BubbleChart {...chartData} />
+            </Col>
+          )}
+        </Row>
+        <Row className="justify-content-lg-center">
+          <Col xs={2}>
+            {fetchStatus !== ApiStatus.success && (
+              <Spinner animation="border" variant="primary" />
+            )}
           </Col>
         </Row>
       </Container>

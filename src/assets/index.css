@@ -11,3 +11,16 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.navbar {
+  margin-bottom: 4em;
+  -webkit-box-shadow: -5px 10px 33px -6px rgba(0, 0, 0, 0.58);
+  -moz-box-shadow: -5px 10px 33px -6px rgba(0, 0, 0, 0.58);
+  box-shadow: -5px 10px 33px -6px rgba(0, 0, 0, 0.58);
+}
+
+.select-box{
+  background-color: #f1f1f1;
+  padding: 2em;
+  margin-bottom: 2em;
+}

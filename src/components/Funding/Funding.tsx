@@ -1,9 +1,29 @@
-import React from "react";
-import { Container, Row, Col, Form, Navbar } from "react-bootstrap";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Container, Row, Col, Form, Navbar, Spinner } from "react-bootstrap";
+import { BubbleChart, IBubbleChart } from "../Charts/BubbleChart";
 
 interface IFundingProps {}
 
+interface IFundingState {
+  graphType: string;
+  xaxis: string;
+  yaxis: string;
+}
+
 const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
+  const dispatch = useDispatch();
+  const initalState = {
+    graphType: "1",
+    xaxis: "x",
+    yaxis: "y",
+  };
+  const [value, setValue] = useState<IFundingState>(initalState);
+  const { graphType, yaxis, xaxis } = value;
+  /**
+   * Get data from state
+   */
+
   /**
    * Array for graph selector
    */
@@ -20,9 +40,48 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
 
   /**
    * Handle onChange method of select
+   * Used to switch graphs
    */
   const showGraph = (event: any) => {
-    console.log(event.target.value);
+    if (event.target.value === "2") {
+      setValue({
+        graphType: event.target.value,
+        xaxis: "y",
+        yaxis: "x",
+      });
+    }
+    if (event.target.value === "1") {
+      setValue(initalState);
+    }
+  };
+
+  /**
+   * Prepare chart data
+   */
+  const chartData: IBubbleChart = {
+    height: 512,
+    width: 1024,
+    margin: 20,
+    data: [
+      {
+        x: 10,
+        y: 20,
+        label: "beauty"
+      },
+      {
+        x: 5,
+        y: 30,
+        label: "games"
+      },
+      {
+        x: 30,
+        y: 12,
+        label: "automotive"
+      }
+    ],
+    graphType,
+    xaxis,
+    yaxis,
   };
 
   return (
@@ -53,6 +112,11 @@ const Funding: React.FC<IFundingProps> = (props: IFundingProps) => {
                 </Form.Control>
               </Col>
             </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <BubbleChart {...chartData} />
           </Col>
         </Row>
       </Container>
